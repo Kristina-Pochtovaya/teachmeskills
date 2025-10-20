@@ -1,0 +1,11 @@
+// prettier.config.js
+module.exports = {
+  printWidth: 80,        // максимальная длина строки
+  tabWidth: 2,           // размер таба
+  useTabs: false,        // использовать пробелы вместо табов
+  semi: true,            // ставить точку с запятой
+  singleQuote: true,     // использовать одинарные кавычки
+  trailingComma: 'es5',  // запятые в объектах и массивах
+  bracketSpacing: true,  // пробелы внутри {}
+  arrowParens: 'always', // всегда использовать скобки у стрелочных функций
+};
