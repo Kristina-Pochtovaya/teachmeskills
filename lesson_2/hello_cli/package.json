@@ -1,0 +1,18 @@
+{
+  "name": "hello_cli",
+  "version": "1.0.0",
+  "description": "Study CLI on native Node.js",
+  "main": "bin/cli.js",
+  "bin": {
+    "hello": "bin/cli.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js",
+    "dev": "node bin/cli.js --help",
+    "link": "npm link",
+    "unlink": "npm unlink -g"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
