@@ -95,7 +95,7 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "GET" && pathname === "/random") {
       const min = parseInt(searchParams.get("min"), 10);
-      const max = parseInt(searchParams.get("max"), 10);
+      const max = parseInt(searchParams.get("max"), 20);
 
       if (isNaN(min) || isNaN(max)) {
         return send(400, { error: "Invalid min or max" });

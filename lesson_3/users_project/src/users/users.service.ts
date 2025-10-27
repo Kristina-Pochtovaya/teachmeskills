@@ -17,16 +17,6 @@ export class UsersService implements OnModuleInit {
   }
 
   async create(dto: CreateUserDto): Promise<User> {
-    const errors = await validate(dto);
-
-    if (errors.length > 0) {
-      const messages = errors
-        .map((error) => Object.values(error.constraints ?? ''))
-        .flat();
-
-      throw new BadRequestException(messages);
-    }
-
     const existingUser = this.users.find((user) => user.email === dto.email);
 
     if (existingUser) {
