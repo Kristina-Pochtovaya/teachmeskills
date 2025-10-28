@@ -39,6 +39,14 @@ function readBody(req) {
 }
 
 function getRandomInt(min, max) {
+  if (min < 10 || max > 20) {
+    console.error(
+      `Min value: ${min} can't be less than 10 and Max value: ${max} can't be more than 20`
+    );
+    process.exitCode = 1;
+    return;
+  }
+
   const minCeiled = Math.ceil(min);
   const maxFloored = Math.floor(max);
   return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled);
@@ -95,7 +103,7 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "GET" && pathname === "/random") {
       const min = parseInt(searchParams.get("min"), 10);
-      const max = parseInt(searchParams.get("max"), 20);
+      const max = parseInt(searchParams.get("max"), 10);
 
       if (isNaN(min) || isNaN(max)) {
         return send(400, { error: "Invalid min or max" });
