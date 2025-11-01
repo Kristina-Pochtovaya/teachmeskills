@@ -2,10 +2,12 @@ import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import { User } from './user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { randomUUID } from 'crypto';
-import { validate } from 'class-validator';
+import { LoggerService } from 'src/logger/logger.service';
 
 @Injectable()
 export class UsersService implements OnModuleInit {
+  constructor(private readonly logger: LoggerService) {}
+
   onModuleInit(): void {
     console.log('UsersService initialized');
   }
@@ -34,6 +36,8 @@ export class UsersService implements OnModuleInit {
     };
 
     this.users.push(user);
+
+    this.logger.log('User created');
 
     return user;
   }
