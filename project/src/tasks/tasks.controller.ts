@@ -21,7 +21,7 @@ import { CacheInterceptor } from '@nestjs/cache-manager';
 import { CompleteManyDto } from './dto/complete-many.dto';
 import { CurrentUser } from 'src/common/current-user.decorator';
 import { ApiKeyGuard } from 'src/common/guards/api-key.guard';
-import { TaskOwnerOrAdmin } from 'src/common/guards/task-owner-or-admin.guard';
+import { TaskOwnerJWT } from 'src/common/guards/task-owner-jwt.guard';
 
 @Controller('tasks')
 export class TasksController {
@@ -74,17 +74,19 @@ export class TasksController {
   }
 
   @Patch(':id/complete')
+  @UseGuards(TaskOwnerJWT)
   complete(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.tasks.complete(id);
   }
 
   @Patch('complete')
+  @UseGuards(TaskOwnerJWT)
   completeMany(@Body() dto: CompleteManyDto) {
     return this.tasks.completeMany(dto.ids);
   }
 
   @Patch(':id')
-  @UseGuards(TaskOwnerOrAdmin)
+  @UseGuards(TaskOwnerJWT)
   update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateTaskDto,
