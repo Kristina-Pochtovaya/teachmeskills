@@ -23,6 +23,7 @@ import { CurrentUser } from 'src/common/current-user.decorator';
 import { ApiKeyGuard } from 'src/common/guards/api-key.guard';
 import { TaskOwnerJWT } from 'src/common/guards/task-owner-jwt.guard';
 
+@UseGuards(TaskOwnerJWT)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasks: TasksService) {}
@@ -74,19 +75,16 @@ export class TasksController {
   }
 
   @Patch(':id/complete')
-  @UseGuards(TaskOwnerJWT)
   complete(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.tasks.complete(id);
   }
 
   @Patch('complete')
-  @UseGuards(TaskOwnerJWT)
   completeMany(@Body() dto: CompleteManyDto) {
     return this.tasks.completeMany(dto.ids);
   }
 
   @Patch(':id')
-  @UseGuards(TaskOwnerJWT)
   update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateTaskDto,

@@ -20,9 +20,7 @@ export class TaskOwnerJWT implements CanActivate {
     }
 
     try {
-      this.jwtService.verify(token, {
-        secret: process.env.JWT_SECRET,
-      });
+      this.jwtService.verify(token);
       return true;
     } catch (err) {
       throw new ForbiddenException('Invalid or expired token');
