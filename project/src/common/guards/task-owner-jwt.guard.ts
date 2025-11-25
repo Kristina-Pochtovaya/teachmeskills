@@ -20,6 +20,10 @@ export class TaskOwnerJWT implements CanActivate {
     }
 
     try {
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
+      console.log('Payload:', payload);
       this.jwtService.verify(token);
       return true;
     } catch (err) {

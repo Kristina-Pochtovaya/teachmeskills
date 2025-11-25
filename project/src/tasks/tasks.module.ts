@@ -6,13 +6,21 @@ import { TasksService } from './tasks.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    JwtModule.register({ secret: process.env.JWT_SECRET }),
+    ConfigModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        secret: config.get<string>('JWT_SECRET'),
+      }),
+    }),
     CacheModule.register({
       ttl: 20,
-      // isGlobal: true,
+      isGlobal: true,
     }),
     TypeOrmModule.forFeature([Task]),
   ],
