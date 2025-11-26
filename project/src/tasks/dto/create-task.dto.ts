@@ -1,5 +1,13 @@
-import { Transform } from 'class-transformer';
-import { IsBoolean, IsOptional, IsString, MinLength } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsDate,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
+import { TaskPriority } from 'src/common/task-priority';
+import { TaskStatus } from 'src/common/task-status.enum';
 
 export class CreateTaskDto {
   @IsString()
@@ -21,5 +29,14 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsString()
-  status?: string;
+  status?: TaskStatus;
+
+  @IsOptional()
+  @IsString()
+  priority?: TaskPriority;
+
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  deadline?: Date;
 }

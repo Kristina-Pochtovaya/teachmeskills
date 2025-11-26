@@ -20,7 +20,10 @@ export class TasksService {
   async create(dto: CreateTaskDto): Promise<Task> {
     const task = this.taskRepo.create({
       title: dto.title,
+      status: dto.status,
       completed: dto.completed ?? false,
+      priority: dto.priority,
+      deadline: dto.deadline,
       ownerId: dto.userId,
     });
 
@@ -56,6 +59,7 @@ export class TasksService {
 
     this.taskRepo.merge(task, {
       title: dto.title ?? task.title,
+      status: dto.status,
       completed: dto.completed ?? task.completed,
     });
 
