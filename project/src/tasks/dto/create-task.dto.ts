@@ -8,10 +8,12 @@ import {
 } from 'class-validator';
 import { TaskPriority } from 'src/common/task-priority';
 import { TaskStatus } from 'src/common/task-status.enum';
+import { IsTitleExisting } from 'src/common/validators/is-title-existing.validator';
 
 export class CreateTaskDto {
   @IsString()
   @MinLength(3)
+  @IsTitleExisting()
   // @Transform(({ value }) => {
   //   const normalized = value.trim().replace(/\s+/g, ' ');
   //   const title = normalized[0].toUpperCase() + normalized.slice(1);

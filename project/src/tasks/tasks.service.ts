@@ -19,12 +19,12 @@ export class TasksService {
   ) {}
 
   async create(dto: CreateTaskDto): Promise<Task> {
-    const tasks = await this.findAll();
-    const existingsTitles = tasks.map((task) => task.title);
+    // const tasks = await this.findAll();
+    // const existingsTitles = tasks.map((task) => task.title);
 
-    if (existingsTitles.includes(dto.title)) {
-      throw new ConflictException('Task with this title already exists');
-    }
+    // if (existingsTitles.includes(dto.title)) {
+    //   throw new ConflictException('Task with this title already exists');
+    // }
 
     const task = this.taskRepo.create({
       title: dto.title,

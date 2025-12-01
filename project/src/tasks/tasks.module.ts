@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { IsTitleExistingConstraint } from 'src/common/validators/is-title-existing.validator';
 
 @Module({
   imports: [
@@ -27,11 +28,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
   controllers: [TasksController],
   providers: [
     TasksService,
+    IsTitleExistingConstraint,
     {
       provide: APP_INTERCEPTOR,
       useClass: CacheInterceptor,
     },
   ],
-  exports: [TasksService],
+  exports: [TasksService, IsTitleExistingConstraint],
 })
 export class TasksModule {}
