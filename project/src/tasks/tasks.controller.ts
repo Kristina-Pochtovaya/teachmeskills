@@ -21,13 +21,14 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 import { CompleteManyDto } from './dto/complete-many.dto';
 import { CurrentUser } from 'src/common/current-user.decorator';
-import { ApiKeyGuard } from 'src/common/guards/api-key.guard';
 import { TaskOwnerJWT } from 'src/common/guards/task-owner-jwt.guard';
 import { NormalizeTaskPipe } from 'src/common/pipes/normilize-task.pipe';
 import { TaskStatusValidationPipe } from 'src/common/pipes/task-status-validation.pipe';
 import { TaskStatus } from 'src/common/task-status.enum';
 import { LoggerInterceptor } from 'src/common/interceptors/logger.interceptor';
 import { ResponseTransformInterceptor } from 'src/common/interceptors/response-transform.interceptor';
+import { TaskPriorityPipe } from 'src/common/pipes/task-priority.pipe';
+import { LoggerChangeTaskDataInterceptor } from 'src/common/interceptors/logger-change-task-data.interceptor';
 
 @UseGuards(TaskOwnerJWT)
 @Controller('tasks')
@@ -48,8 +49,15 @@ export class TasksController {
     @Query('status', TaskStatusValidationPipe) status?: TaskStatus,
   ) {
     const all = await this.tasks.findAll();
+    let filteredData = null;
+
+    if (status) {
+      filteredData = all.filter((task) => task.status === status);
+    }
     const start = (page - 1) * limit;
-    const data = all.slice(start, start + limit);
+    const data = filteredData
+      ? filteredData.slice(start, start + limit)
+      : all.slice(start, start + limit);
 
     return {
       data,
@@ -71,29 +79,33 @@ export class TasksController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(NormalizeTaskPipe)
+  @UsePipes(NormalizeTaskPipe, TaskPriorityPipe)
+  @UseInterceptors(LoggerChangeTaskDataInterceptor)
   create(@Body() dto: CreateTaskDto) {
     return this.tasks.create(dto);
   }
 
   @Delete(':id')
-  @UseGuards(ApiKeyGuard)
   @HttpCode(204)
+  @UseInterceptors(LoggerChangeTaskDataInterceptor)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.tasks.remove(id);
   }
 
   @Patch(':id/complete')
+  @UseInterceptors(LoggerChangeTaskDataInterceptor)
   complete(@Param('id', new ParseUUIDPipe()) id: string) {
     return this.tasks.complete(id);
   }
 
   @Patch('complete')
+  @UseInterceptors(LoggerChangeTaskDataInterceptor)
   completeMany(@Body() dto: CompleteManyDto) {
     return this.tasks.completeMany(dto.ids);
   }
 
   @Patch(':id')
+  @UseInterceptors(LoggerChangeTaskDataInterceptor)
   update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() dto: UpdateTaskDto,

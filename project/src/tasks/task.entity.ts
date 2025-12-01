@@ -1,3 +1,5 @@
+import { TaskPriority } from 'src/common/task-priority';
+import { TaskStatus } from 'src/common/task-status.enum';
 import {
   Column,
   CreateDateColumn,
@@ -23,6 +25,15 @@ export class Task {
   @Column()
   @Index()
   ownerId: string;
+
+  @Column({ nullable: true })
+  status?: TaskStatus;
+
+  @Column({ nullable: true })
+  priority?: TaskPriority;
+
+  @Column({ nullable: true })
+  deadline?: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;
