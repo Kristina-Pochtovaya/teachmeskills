@@ -7,16 +7,13 @@ import {
   Post,
   Req,
 } from '@nestjs/common';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { ClientProxy } from '@nestjs/microservices';
 import { catchError, lastValueFrom, retry, throwError, timeout } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 
 @Controller()
 export class AppController {
-  constructor(
-    @Inject('USER_SERVICE') private userService: ClientProxy,
-    @Inject('EMAIL_SERVICE') private emailService: ClientProxy,
-  ) {}
+  constructor(@Inject('USER_SERVICE') private userService: ClientProxy) {}
 
   @Get(':id')
   getUser(@Param() id: number) {
@@ -33,7 +30,7 @@ export class AppController {
   }
 
   @Post()
-  creatUser(@Req() req, @Body() body: { name: string }) {
+  creatUser(@Req() req, @Body() body: { name: string; email?: string }) {
     const requestId = uuid();
     const traceId = req.traceId;
 
@@ -42,6 +39,7 @@ export class AppController {
         requestId,
         traceId,
         name: body.name,
+        email: body.email,
       })
       .pipe(
         retry(3),
@@ -58,10 +56,5 @@ export class AppController {
       );
 
     return lastValueFrom(result);
-
-    // const user = { id: Date.now(), email: body.email };
-    // this.userService.emit('create-user', user.id);
-    // this.emailService.emit('create-user', user.email);
-    // return { status: 'ok' };
   }
 }

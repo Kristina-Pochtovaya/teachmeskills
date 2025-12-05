@@ -1,16 +1,22 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
+import { Controller, Inject } from '@nestjs/common';
+import {
+  ClientProxy,
+  MessagePattern,
+  Payload,
+  RpcException,
+} from '@nestjs/microservices';
 
 interface CreateUserPayload {
   requestId: string;
   name: string;
+  email?: string;
 }
 
 const processedRequests = new Map<string, any>();
 
 @Controller()
 export class AppController {
-  constructor() {}
+  constructor(@Inject('EMAIL_SERVICE') private emailService: ClientProxy) {}
 
   @MessagePattern('get-user')
   handleGetUser(@Payload() data: { id: number }) {
@@ -19,7 +25,7 @@ export class AppController {
 
   @MessagePattern('create-user')
   handleUserCreated(@Payload() data: CreateUserPayload) {
-    const { requestId, name } = data;
+    const { requestId, name, email } = data;
 
     console.log('[user-service] user created event received:', data);
 
@@ -41,13 +47,14 @@ export class AppController {
     const createdUser = {
       id: Date.now(),
       name,
+      email,
       createdAt: new Date().toISOString(),
     };
 
     processedRequests.set(requestId, createdUser);
     console.log('[user-service] user created sucessfully', requestId);
 
-    //this.emit('create-user', ...)
+    this.emailService.emit('create-user', createdUser.email);
 
     return createdUser;
   }

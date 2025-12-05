@@ -5,7 +5,7 @@ import { EventPattern, Payload } from '@nestjs/microservices';
 export class AppController {
   constructor() {}
 
-  @EventPattern('user-created')
+  @EventPattern('create-user')
   handleUserCreated(@Payload() email: string) {
     console.log(`[email-service] sending welcome email to ${email}`);
   }
