@@ -16,7 +16,7 @@ const processedRequests = new Map<string, any>();
 
 @Controller()
 export class AppController {
-  constructor(@Inject('EMAIL_SERVICE') private emailService: ClientProxy) {}
+  constructor(@Inject('EMAIL_SERVICE') private client: ClientProxy) {}
 
   @MessagePattern('get-user')
   handleGetUser(@Payload() data: { id: number }) {
@@ -54,7 +54,7 @@ export class AppController {
     processedRequests.set(requestId, createdUser);
     console.log('[user-service] user created sucessfully', requestId);
 
-    this.emailService.emit('create-user', createdUser.email);
+    this.client.emit('create-user', createdUser.email);
 
     return createdUser;
   }
