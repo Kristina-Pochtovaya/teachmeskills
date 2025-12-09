@@ -8,18 +8,18 @@ import { Task } from './task.entity';
 
 @Module({
   imports: [
-    CacheModule.register({
-      ttl: 20,
-      // isGlobal: true,
-    }),
+    // CacheModule.register({
+    //   ttl: 200000,
+    //   // isGlobal: true,
+    // }),
     TypeOrmModule.forFeature([Task]),
   ],
   providers: [
     TasksService,
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: CacheInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: CacheInterceptor,
+    // },
   ],
   controllers: [TasksController],
   exports: [TasksService],

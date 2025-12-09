@@ -19,12 +19,18 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { CacheInterceptor } from '@nestjs/cache-manager';
 
+// @UseInterceptors(CacheInterceptor)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasks: TasksService) {}
 
+  @Get('test-cache')
+  testCache() {
+    console.log('EXECUTED: not from cache');
+    return { message: 'hello' };
+  }
+
   @Get()
-  @UseInterceptors(CacheInterceptor)
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
@@ -34,7 +40,6 @@ export class TasksController {
   }
 
   @Get(':id')
-  @UseInterceptors(CacheInterceptor)
   async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
     const task = await this.tasks.findOne(id);
 
