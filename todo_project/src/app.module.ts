@@ -6,8 +6,10 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import dbConfig from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CacheModule } from '@nestjs/cache-manager';
+// import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-ioredis-yet';
+import { CacheModule } from './cache/cache.module';
+// import { CacheModule } from './cache/cache.module';
 
 @Module({
   imports: [
@@ -28,22 +30,25 @@ import { redisStore } from 'cache-manager-ioredis-yet';
       },
     }),
 
-    CacheModule.register({
-      isGlobal: true,
-      store: redisStore({
-        host: 'localhost',
-        port: 6379,
-        db: 0,
-        keyPrefix: '',
-      }),
-      ttl: 300,
-    }),
+    // CacheModule.registerAsync({
+    //   isGlobal: true,
+    //   useFactory: async () => ({
+    //     store: await redisStore({
+    //       host: 'localhost',
+    //       port: 6379,
+    //       db: 0,
+    //       keyPrefix: '',
+    //     }),
+    //     ttl: 300000,
+    //   }),
+    // }),
 
     TasksModule,
     AuthModule.forRoot({
       secret: 'super-secret',
       tokenPrefix: 'Bearer',
     }),
+    CacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],
