@@ -6,16 +6,22 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import dbConfig from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-// import { CacheModule } from '@nestjs/cache-manager';
-import { redisStore } from 'cache-manager-ioredis-yet';
-import { CacheModule } from './cache/cache.module';
-// import { CacheModule } from './cache/cache.module';
+import { createKeyv } from '@keyv/redis';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [dbConfig],
+    }),
+
+    CacheModule.registerAsync({
+      isGlobal: true,
+      useFactory: () => ({
+        ttl: 300_000,
+        stores: [createKeyv('redis://localhost:6379')],
+      }),
     }),
 
     TypeOrmModule.forRootAsync({
@@ -29,26 +35,11 @@ import { CacheModule } from './cache/cache.module';
         };
       },
     }),
-
-    // CacheModule.registerAsync({
-    //   isGlobal: true,
-    //   useFactory: async () => ({
-    //     store: await redisStore({
-    //       host: 'localhost',
-    //       port: 6379,
-    //       db: 0,
-    //       keyPrefix: '',
-    //     }),
-    //     ttl: 300000,
-    //   }),
-    // }),
-
     TasksModule,
     AuthModule.forRoot({
       secret: 'super-secret',
       tokenPrefix: 'Bearer',
     }),
-    CacheModule,
   ],
   controllers: [AppController],
   providers: [AppService],

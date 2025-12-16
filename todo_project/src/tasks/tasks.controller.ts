@@ -12,14 +12,11 @@ import {
   Patch,
   Post,
   Query,
-  UseInterceptors,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { CacheInterceptor } from '@nestjs/cache-manager';
 
-// @UseInterceptors(CacheInterceptor)
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasks: TasksService) {}

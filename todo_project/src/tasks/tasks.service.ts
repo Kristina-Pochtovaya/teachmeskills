@@ -11,8 +11,8 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { AuthService } from '../auth/auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
-import { CacheService } from 'src/cache/cache.service';
-// import { CACHE_MANAGER, Cache } from '@nestjs/cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 
 @Injectable()
 export class TasksService {
@@ -21,8 +21,7 @@ export class TasksService {
     @InjectRepository(Task)
     private readonly taskRepo: Repository<Task>,
     private readonly dataSource: DataSource,
-    // @Inject(CACHE_MANAGER) private readonly cache: Cache,
-    private readonly cache: CacheService, // Inject the CacheService
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   async findAll(
@@ -57,9 +56,8 @@ export class TasksService {
 
   async findOne(id: string): Promise<Task> {
     const key = `tasks:${id}`;
-    const cached = await this.cache.get<Task>(key);
-    console.log(cached, 'cached');
-    // console.log('CACHE_STORE:', this.cache.stores[0].constructor?.name);
+    const cached = await this.cacheManager.get<Task>(key);
+
     if (cached) {
       console.log('CACHE HIT', key);
       return cached;
@@ -72,7 +70,7 @@ export class TasksService {
       throw new NotFoundException(`Task ${id} - not found`);
     }
 
-    await this.cache.set(key, task, 300 * 1000);
+    await this.cacheManager.set(key, task);
 
     return task;
   }
