@@ -5,13 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Task } from './task.entity';
 import { BullModule } from '@nestjs/bull';
 import { TasksCacheProcessor } from './tasks-cache.processor';
+import { TasksSendWelcomeProcessor } from './tasks-send-welcome.processor';
 
 @Module({
   imports: [
     BullModule.registerQueue({ name: 'tasks' }),
+    BullModule.registerQueue({ name: 'email' }),
     TypeOrmModule.forFeature([Task]),
   ],
-  providers: [TasksService, TasksCacheProcessor],
+  providers: [TasksService, TasksCacheProcessor, TasksSendWelcomeProcessor],
   controllers: [TasksController],
   exports: [TasksService],
 })

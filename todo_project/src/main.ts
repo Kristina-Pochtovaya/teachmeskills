@@ -11,11 +11,12 @@ import { BullAdapter } from '@bull-board/api/bullAdapter';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const tasksQueue = app.get<Queue>(getQueueToken('tasks'));
+  const emailQueue = app.get<Queue>(getQueueToken('email'));
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');
 
   createBullBoard({
-    queues: [new BullAdapter(tasksQueue)],
+    queues: [new BullAdapter(tasksQueue), new BullAdapter(emailQueue)],
     serverAdapter: serverAdapter,
   });
 

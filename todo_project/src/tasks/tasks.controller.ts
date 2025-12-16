@@ -16,14 +16,29 @@ import {
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { InjectQueue } from '@nestjs/bull';
+import type { Queue } from 'bull';
 
 @Controller('tasks')
 export class TasksController {
-  constructor(private readonly tasks: TasksService) {}
+  constructor(
+    private readonly tasks: TasksService,
+    @InjectQueue('email') private readonly emailQueue: Queue,
+  ) {}
 
   @Get('test-cache')
-  testCache() {
+  testCache(@Body() userId: string) {
     console.log('EXECUTED: not from cache');
+    return { message: 'hello' };
+  }
+
+  @Get('test_email')
+  async testEmail(@Body() userId: string) {
+    await this.emailQueue.add(
+      'send-welcome',
+      { userId },
+      { attempts: 5, backoff: { delay: 1000, type: 'exponential' } },
+    );
     return { message: 'hello' };
   }
 

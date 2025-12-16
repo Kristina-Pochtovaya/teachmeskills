@@ -28,7 +28,6 @@ export class TasksService {
   ) {}
 
   private async enqueuInvalidateTaskCache(taskId: string) {
-    console.log(taskId, 'taskId');
     await this.tasksQueue.add(
       'invalidate-task-cache',
       { taskId },
@@ -101,7 +100,6 @@ export class TasksService {
     });
 
     const savedTask = await this.taskRepo.save(task);
-
     return savedTask;
   }
 
