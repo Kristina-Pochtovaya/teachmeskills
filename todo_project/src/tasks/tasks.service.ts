@@ -13,6 +13,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+import { InjectQueue } from '@nestjs/bull';
+import type { Queue } from 'bull';
 
 @Injectable()
 export class TasksService {
@@ -22,7 +24,21 @@ export class TasksService {
     private readonly taskRepo: Repository<Task>,
     private readonly dataSource: DataSource,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    @InjectQueue('tasks') private readonly tasksQueue: Queue,
   ) {}
+
+  private async enqueuInvalidateTaskCache(taskId: string) {
+    console.log(taskId, 'taskId');
+    await this.tasksQueue.add(
+      'invalidate-task-cache',
+      { taskId },
+      {
+        attempts: 5,
+        backoff: { delay: 1000, type: 'exponential' },
+        removeOnComplete: false,
+      },
+    );
+  }
 
   async findAll(
     page: number,
@@ -105,7 +121,7 @@ export class TasksService {
   }
 
   async update(id: string, dto: UpdateTaskDto, token: string): Promise<Task> {
-    await this.getOwnedTask(id, token);
+    // await this.getOwnedTask(id, token);
 
     const task = await this.findOne(id);
 
@@ -114,7 +130,9 @@ export class TasksService {
       completed: dto.completed ?? task.completed,
     });
 
-    return this.taskRepo.save(task);
+    const savedTask = await this.taskRepo.save(task);
+    await this.enqueuInvalidateTaskCache(id);
+    return savedTask;
   }
 
   async complete(id: string, token: string): Promise<Task> {
@@ -125,6 +143,7 @@ export class TasksService {
       await this.taskRepo.save(task);
     }
 
+    this.enqueuInvalidateTaskCache(id);
     return task;
   }
 
@@ -152,6 +171,7 @@ export class TasksService {
         .execute();
 
       await runner.commitTransaction();
+      await Promise.all(ids.map((id) => this.enqueuInvalidateTaskCache(id)));
     } catch (error) {
       await runner.rollbackTransaction();
       throw error;
@@ -195,6 +215,7 @@ export class TasksService {
   async remove(id: string, token: string): Promise<void> {
     const task = await this.getOwnedTask(id, token);
     this.taskRepo.softDelete(task.id);
+    this.enqueuInvalidateTaskCache(id);
   }
 
   toHateoas(task: Task) {

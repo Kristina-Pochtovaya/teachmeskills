@@ -8,12 +8,20 @@ import dbConfig from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { createKeyv } from '@keyv/redis';
 import { CacheModule } from '@nestjs/cache-manager';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [dbConfig],
+    }),
+
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST ?? 'localhost',
+        port: Number(process.env.REDIS_PORT ?? 6379),
+      },
     }),
 
     CacheModule.registerAsync({
