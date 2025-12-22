@@ -8,6 +8,7 @@ import dbConfig from './config/db.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserContextMiddleware } from './common/middlewares/user-context.middleware';
 import { UsersModule } from './users/users.module';
+import { FileStorageModule } from './file-storage/file-storage.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UsersModule } from './users/users.module';
       tokenPrefix: 'Bearer',
     }),
     UsersModule,
+    FileStorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

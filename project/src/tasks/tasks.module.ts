@@ -8,10 +8,12 @@ import { Task } from './task.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { IsTitleExistingConstraint } from 'src/common/validators/is-title-existing.validator';
+import { FileStorageModule } from 'src/file-storage/file-storage.module';
 
 @Module({
   imports: [
     ConfigModule,
+    FileStorageModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
