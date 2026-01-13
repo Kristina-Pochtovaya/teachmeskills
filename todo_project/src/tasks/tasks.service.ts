@@ -8,7 +8,6 @@ import {
 import { Task } from './task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { AuthService } from '../auth/auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -19,7 +18,6 @@ import type { Queue } from 'bull';
 @Injectable()
 export class TasksService {
   constructor(
-    private readonly auth: AuthService,
     @InjectRepository(Task)
     private readonly taskRepo: Repository<Task>,
     private readonly dataSource: DataSource,
@@ -91,31 +89,16 @@ export class TasksService {
   }
 
   async create(dto: CreateTaskDto, token: string): Promise<Task> {
-    const ownerId = this.auth.verifyToken(token);
-
     const task = this.taskRepo.create({
       title: dto.title,
       completed: dto.completed ?? false,
-      ownerId,
     });
 
-    const savedTask = await this.taskRepo.save(task);
-    return savedTask;
+    return this.taskRepo.save(task);
   }
 
   async getOwnedTask(id: string, token?: string): Promise<Task> {
-    if (!token) {
-      throw new UnauthorizedException('Missing token');
-    }
-
-    const ownerId = this.auth.verifyToken(token);
-    const task = await this.findOne(id);
-
-    if (task.ownerId !== ownerId) {
-      throw new ForbiddenException('Access denied');
-    }
-
-    return task;
+    return this.findOne(id);
   }
 
   async update(id: string, dto: UpdateTaskDto, token: string): Promise<Task> {

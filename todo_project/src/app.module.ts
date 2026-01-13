@@ -14,6 +14,7 @@ import { BullModule } from '@nestjs/bull';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: process.env.NODE_ENV === 'test' ? '.env.test' : '.env',
       load: [dbConfig],
     }),
 
@@ -44,10 +45,10 @@ import { BullModule } from '@nestjs/bull';
       },
     }),
     TasksModule,
-    AuthModule.forRoot({
-      secret: 'super-secret',
-      tokenPrefix: 'Bearer',
-    }),
+    // AuthModule.forRoot({
+    //   secret: 'super-secret',
+    //   tokenPrefix: 'Bearer',
+    // }),
   ],
   controllers: [AppController],
   providers: [AppService],
