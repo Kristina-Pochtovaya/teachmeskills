@@ -64,7 +64,7 @@ export class TasksController {
     @Body() dto: CreateTaskDto,
     @Headers('authorization') authHeader: string,
   ) {
-    return this.tasks.create(dto, authHeader);
+    return this.tasks.create(dto);
   }
 
   @Patch('restore')
@@ -83,7 +83,7 @@ export class TasksController {
     @Body() dto: UpdateTaskDto,
     @Headers('authorization') authHeader: string,
   ) {
-    return this.tasks.update(id, dto, authHeader);
+    return this.tasks.update(id, dto);
   }
 
   @Delete(':id')
@@ -92,7 +92,7 @@ export class TasksController {
     @Param('id', new ParseUUIDPipe()) id: string,
     @Headers('authorization') authHeader: string,
   ) {
-    this.tasks.remove(id, authHeader);
+    this.tasks.remove(id);
   }
 
   @Patch(':id/complete')

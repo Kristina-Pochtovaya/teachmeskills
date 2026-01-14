@@ -6,6 +6,7 @@ import { Task } from './task.entity';
 import { BullModule } from '@nestjs/bull';
 import { TasksCacheProcessor } from './tasks-cache.processor';
 import { TasksSendWelcomeProcessor } from './tasks-send-welcome.processor';
+import { TasksResolver } from './tasks.resolver';
 
 @Module({
   imports: [
@@ -13,7 +14,12 @@ import { TasksSendWelcomeProcessor } from './tasks-send-welcome.processor';
     BullModule.registerQueue({ name: 'email' }),
     TypeOrmModule.forFeature([Task]),
   ],
-  providers: [TasksService, TasksCacheProcessor, TasksSendWelcomeProcessor],
+  providers: [
+    TasksService,
+    TasksResolver,
+    TasksCacheProcessor,
+    TasksSendWelcomeProcessor,
+  ],
   controllers: [TasksController],
   exports: [TasksService],
 })

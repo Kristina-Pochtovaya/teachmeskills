@@ -5,6 +5,10 @@ export class CreateTaskDto {
   @MinLength(3)
   title: string;
 
+  @IsString()
+  @MinLength(3)
+  ownerId: string;
+
   @IsOptional()
   @IsBoolean()
   completed?: boolean;

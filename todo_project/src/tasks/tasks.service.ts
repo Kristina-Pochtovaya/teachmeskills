@@ -41,15 +41,18 @@ export class TasksService {
     page: number,
     limit: number,
     completed?: boolean,
-  ): Promise<{
-    data: Task[];
-    metadata: { page: number; limit: number; total: number };
-  }> {
+  ): Promise<
+    Task[]
+    // {
+    //   // data: Task[];
+    //   // metadata: { page: number; limit: number; total: number };
+    // }
+  > {
     const query = this.taskRepo
       .createQueryBuilder('task')
-      .orderBy('task.createdAt', 'DESC')
-      .limit(limit)
-      .offset((page - 1) * limit);
+      .orderBy('task.createdAt', 'DESC');
+    // .limit(limit)
+    // .offset((page - 1) * limit);
 
     if (completed !== undefined) {
       query.where({ completed });
@@ -57,14 +60,16 @@ export class TasksService {
 
     const [data, total] = await query.getManyAndCount();
 
-    return {
-      data,
-      metadata: {
-        page,
-        limit,
-        total,
-      },
-    };
+    // return {
+    //   data,
+    //   metadata: {
+    //     page,
+    //     limit,
+    //     total,
+    //   },
+    // };
+
+    return data;
   }
 
   async findOne(id: string): Promise<Task> {
@@ -88,9 +93,10 @@ export class TasksService {
     return task;
   }
 
-  async create(dto: CreateTaskDto, token: string): Promise<Task> {
+  async create(dto: CreateTaskDto): Promise<Task> {
     const task = this.taskRepo.create({
       title: dto.title,
+      ownerId: dto.ownerId,
       completed: dto.completed ?? false,
     });
 
@@ -101,7 +107,7 @@ export class TasksService {
     return this.findOne(id);
   }
 
-  async update(id: string, dto: UpdateTaskDto, token: string): Promise<Task> {
+  async update(id: string, dto: UpdateTaskDto): Promise<Task> {
     // await this.getOwnedTask(id, token);
 
     const task = await this.findOne(id);
@@ -193,8 +199,8 @@ export class TasksService {
     }
   }
 
-  async remove(id: string, token: string): Promise<void> {
-    const task = await this.getOwnedTask(id, token);
+  async remove(id: string): Promise<void> {
+    const task = await this.getOwnedTask(id);
     this.taskRepo.softDelete(task.id);
     this.enqueuInvalidateTaskCache(id);
   }
