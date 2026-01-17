@@ -7,6 +7,7 @@ import { BullModule } from '@nestjs/bull';
 import { TasksCacheProcessor } from './tasks-cache.processor';
 import { TasksSendWelcomeProcessor } from './tasks-send-welcome.processor';
 import { TasksResolver } from './tasks.resolver';
+import { TaskByIdLoader } from './tasks-by-id.loader';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { TasksResolver } from './tasks.resolver';
   providers: [
     TasksService,
     TasksResolver,
+    TaskByIdLoader,
     TasksCacheProcessor,
     TasksSendWelcomeProcessor,
   ],

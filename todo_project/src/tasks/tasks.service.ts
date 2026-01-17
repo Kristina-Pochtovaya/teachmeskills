@@ -92,6 +92,16 @@ export class TasksService {
 
     return task;
   }
+  async findByIds(ids: string[]): Promise<(Task | undefined)[]> {
+    const tasks = await this.taskRepo.find({
+      where: { id: In(ids) },
+      withDeleted: false,
+    });
+
+    const map = new Map(tasks.map((task) => [task.id, task]));
+
+    return ids.map((id) => map.get(id)).filter(Boolean);
+  }
 
   async create(dto: CreateTaskDto): Promise<Task> {
     const task = this.taskRepo.create({
