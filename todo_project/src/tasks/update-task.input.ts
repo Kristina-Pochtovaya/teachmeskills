@@ -1,5 +1,5 @@
 import { Field, ID, InputType } from '@nestjs/graphql';
-import { IsOptional, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 
 @InputType()
 export class UpdateTaskInput {
@@ -15,6 +15,11 @@ export class UpdateTaskInput {
   //   description?: string;
 
   @Field({ nullable: true })
+  @IsString()
   @IsOptional()
   completed?: boolean;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  ownerId?: string;
 }

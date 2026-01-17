@@ -6,6 +6,10 @@ export class UpdateTaskDto {
   @IsOptional()
   title?: string;
 
+  @IsString()
+  @IsOptional()
+  ownerId?: string;
+
   @IsOptional()
   @IsBoolean()
   completed?: boolean;

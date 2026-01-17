@@ -12,6 +12,7 @@ import { BullModule } from '@nestjs/bull';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -40,6 +41,9 @@ import { join } from 'path';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       playground: true,
+      subscriptions: {
+        'subscriptions-transport-ws': true,
+      },
     }),
 
     TypeOrmModule.forRootAsync({
@@ -54,6 +58,7 @@ import { join } from 'path';
       },
     }),
     TasksModule,
+    UsersModule,
     // AuthModule.forRoot({
     //   secret: 'super-secret',
     //   tokenPrefix: 'Bearer',

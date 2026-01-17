@@ -6,6 +6,12 @@ type TaskType {
   id: ID!
   title: String!
   completed: Boolean!
+  owner: UserType!
+}
+
+type UserType {
+  id: ID!
+  name: String!
 }
 
 type Query {
@@ -28,4 +34,9 @@ input UpdateTaskInput {
   id: ID!
   title: String
   completed: Boolean
+  ownerId: String
+}
+
+type Subscription {
+  taskCreated: TaskType!
 }
