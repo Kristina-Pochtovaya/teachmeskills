@@ -1,17 +1,17 @@
 import { Task } from '../tasks/task.entity';
 import dataSource from './data-source';
-// import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 async function seed() {
   await dataSource.initialize();
 
   const repo = dataSource.getRepository(Task);
-  //   const options = dataSource.options as PostgresConnectionOptions;
+  const options = dataSource.options as PostgresConnectionOptions;
   const count = await repo.count();
-
-  //   console.log('DB Host:', options.host);
-  //   console.log('DB Name:', options.database);
-  //   console.log('DB User:', options.username);
+  console.log(count, 'COUNT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+  console.log('DB Host:', options.host);
+  console.log('DB Name:', options.database);
+  console.log('DB User:', options.username);
   if (count === 0) {
     await repo.save([
       repo.create({

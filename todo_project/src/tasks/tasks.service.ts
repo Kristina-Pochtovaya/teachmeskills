@@ -92,6 +92,7 @@ export class TasksService {
     const task = this.taskRepo.create({
       title: dto.title,
       completed: dto.completed ?? false,
+      ownerId: dto.ownerId ?? '111',
     });
 
     return this.taskRepo.save(task);
