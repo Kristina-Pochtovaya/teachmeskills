@@ -23,7 +23,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     environment:
       PORT: 3000
       DB_HOST: db
@@ -34,11 +34,14 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       NODE_ENV: development
+      WATCHPACK_POLLING: 'true'
+      CHOKIDAR_USEPOLLING: 'true'
+      CHOKIDAR_INTERVAL: '100'
     ports:
       - '3000:3000'
-    # volumes:
-    #   - ./:/app
-    #   - /app/node_modules
+    volumes:
+      - ./:/app:cached
+      - /app/node_modules
     depends_on:
       - db
       - redis
