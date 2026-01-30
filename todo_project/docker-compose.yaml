@@ -4,9 +4,9 @@ services:
   db:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 28Kris2021
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
     ports:
       - '5432:5432'
     volumes:
@@ -16,32 +16,33 @@ services:
     image: redis:7-alpine
     ports:
       - '6379:6379'
-    command: ['redis-server', '--append-only', 'yes']
+    command: ['redis-server', '--appendonly', 'yes']
     volumes:
       - redisdata:/data
 
   app:
     build:
       context: .
-      dockerfile: Dockerfile.dev
+      # dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     environment:
-      PORT: 3000
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_USER: postgres
-      DB_PASS: 28Kris2021
-      DB_NAME: postgres
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      NODE_ENV: development
-      WATCHPACK_POLLING: 'true'
-      CHOKIDAR_USEPOLLING: 'true'
-      CHOKIDAR_INTERVAL: '100'
+      PORT: ${PORT}
+      DB_HOST: ${DB_HOST_DOCKER}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      REDIS_HOST: ${REDIS_HOST_DOCKER}
+      REDIS_PORT: ${REDIS_PORT}
+      NODE_ENV: ${NODE_ENV}
+      # WATCHPACK_POLLING: 'true'
+      # CHOKIDAR_USEPOLLING: 'true'
+      # CHOKIDAR_INTERVAL: '100'
     ports:
       - '3000:3000'
-    volumes:
-      - ./:/app:cached
-      - /app/node_modules
+    # volumes:
+    #   - ./:/app
+    #   - /app/node_modules
     depends_on:
       - db
       - redis
